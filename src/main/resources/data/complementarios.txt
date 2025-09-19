@@ -1,0 +1,4 @@
+# Grafo de Productos Complementarios
+Depósitos->Seguros
+Retiros->Retiro sin tarjeta
+Cambio de Divisas->Tarjeta de crédito

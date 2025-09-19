@@ -1,0 +1,10 @@
+# Configuración del Sistema Bancario
+# Generado automáticamente - No editar manualmente
+# Fecha: 2025-09-18T18:37:32.322687
+
+CantidadCajas=5
+CajasNormales=3,4,5
+CajaRapida=2
+PrimerEjecucion=false
+CajaPreferencial=1
+NombreBanco=ABC
