@@ -5,7 +5,7 @@ Proyecto de Estructura de Datos desarrollo de aplicacion para gestion de tiquete
 Integrantes:
 - Handel Enriquez
 - Stef Gomez
-
+- Josué Grijalba
 
 
 
