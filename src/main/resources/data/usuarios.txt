@@ -1,0 +1,6 @@
+# Configuración del Sistema Bancario
+# Generado automáticamente - No editar manualmente
+# Fecha: 2025-10-21T09:45:45.412556900
+
+user1=abcd
+admin=1234
