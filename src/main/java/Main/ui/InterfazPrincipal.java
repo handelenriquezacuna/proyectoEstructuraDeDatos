@@ -4,6 +4,7 @@ import Main.config.Configuracion;
 import Main.model.Cliente;
 import Main.model.Tiquete;
 import Main.model.ColaTiquetes;
+import java.awt.HeadlessException;
 
 import javax.swing.JOptionPane;
 
@@ -12,8 +13,8 @@ import javax.swing.JOptionPane;
  */
 public class InterfazPrincipal {
 
-    private Configuracion configuracion;
-    private ColaTiquetes colaTiquetes;
+    private final Configuracion configuracion;
+    private final ColaTiquetes colaTiquetes;
 
     public InterfazPrincipal(Configuracion configuracion) {
         this.configuracion = configuracion;
@@ -67,28 +68,16 @@ public class InterfazPrincipal {
 
     private void procesarOpcionMenu(int opcion) {
         switch (opcion) {
-            case 1:
-                crearTiquete();
-                break;
-            case 2:
-                atenderTiquete();
-                break;
-            case 3:
-                JOptionPane.showMessageDialog(null, colaTiquetes.mostrarCola());
-                break;
-            case 4:
-                JOptionPane.showMessageDialog(null, "Función en desarrollo: Reportes");
-                break;
-            case 5:
-                JOptionPane.showMessageDialog(null, "Función en desarrollo: Tipo de Cambio");
-                break;
-            case 6:
+            case 1 -> crearTiquete();
+            case 2 -> atenderTiquete();
+            case 3 -> JOptionPane.showMessageDialog(null, colaTiquetes.mostrarCola());
+            case 4 -> JOptionPane.showMessageDialog(null, "Función en desarrollo: Reportes");
+            case 5 -> JOptionPane.showMessageDialog(null, "Función en desarrollo: Tipo de Cambio");
+            case 6 -> {
                 JOptionPane.showMessageDialog(null, "¡Gracias por usar el sistema!");
                 System.exit(0);
-                break;
-            default:
-                JOptionPane.showMessageDialog(null, "Opción no válida");
-                break;
+            }
+            default -> JOptionPane.showMessageDialog(null, "Opción no válida");
         }
 
         if (opcion != 6) {
@@ -106,22 +95,29 @@ public class InterfazPrincipal {
             String tipo = JOptionPane.showInputDialog("Ingrese el tipo (P, A, B):").toUpperCase();
 
             Cliente cliente = new Cliente(nombre, id, edad);
-            int cajaAsignada = 1; // Por ahora, caja fija
+            int cajaAsignada = configuracion.getCajaPreferencial(); // Caja preferencial
 
             Tiquete tiquete = new Tiquete(cliente, tramite, tipo, cajaAsignada);
             colaTiquetes.encolar(tiquete);
 
+            // 🔹 NUEVO: Verificar si la caja está libre (cola vacía antes de agregar)
+            if (colaTiquetes.contarElementos() == 1) {
+                JOptionPane.showMessageDialog(null,
+                        "La caja está libre. Puede ser atendido inmediatamente.");
+            }
+
             JOptionPane.showMessageDialog(null,
                     "Tiquete creado exitosamente:\n\n" + tiquete.toString()
-                    + "\nPersonas delante de usted: " + (colaTiquetes.contarElementos() - 1));
-        } catch (Exception e) {
+                    + "\n\nPersonas delante de usted: " + (colaTiquetes.contarElementos() - 1));
+
+        } catch (HeadlessException | NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Error al crear tiquete: " + e.getMessage());
         }
     }
-
-    // 🧾 Atender tiquete
+        
+        // 🧾 Atender tiquete
     private void atenderTiquete() {
-        if (colaTiquetes.estaVacia()) {
+        if (colaTiquetes.esVacia()) {
             JOptionPane.showMessageDialog(null, "No hay tiquetes en espera.");
             return;
         }

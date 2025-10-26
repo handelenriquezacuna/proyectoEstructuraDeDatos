@@ -9,12 +9,12 @@ import java.time.format.DateTimeFormatter;
  */
 public class Tiquete {
 
-    private Cliente cliente;
-    private String tramite;
-    private String tipo; // P, A, B
-    private LocalDateTime horaCreacion;
+    private final Cliente cliente;
+    private final String tramite;
+    private final String tipo; // P, A, B
+    private final LocalDateTime horaCreacion;
     private LocalDateTime horaAtencion;
-    private int numeroCaja;
+    private final int numeroCaja;
 
     public Tiquete(Cliente cliente, String tramite, String tipo, int numeroCaja) {
         this.cliente = cliente;
