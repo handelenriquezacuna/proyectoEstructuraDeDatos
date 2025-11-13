@@ -4,45 +4,51 @@
  */
 package Main.model;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Josue
  */
 public class ColaTiquetes {
 
-    private NodoTiquete primero;
-    private NodoTiquete ultimo;
+    private NodoTiquete inicio;
+    private NodoTiquete fin;
+
+    public boolean esVacia() {
+        return inicio == null;
+    }
 
     public void encolar(Tiquete tiquete) {
-        NodoTiquete nuevo = new NodoTiquete(tiquete);
-        if (ultimo == null) {
-            primero = nuevo;
-            ultimo = nuevo;
+        NodoTiquete n = new NodoTiquete(tiquete);
+        if (esVacia()) {
+            inicio = fin = n;
         } else {
-            ultimo.setSiguiente(nuevo);
-            ultimo = nuevo;
+            fin.setSiguiente(n);
+            fin = n;
         }
     }
 
     public Tiquete desencolar() {
-        if (primero == null) {
+        if (esVacia()) {
             return null;
         }
-        Tiquete tiquete = primero.getTiquete();
-        primero = primero.getSiguiente();
-        if (primero == null) {
-            ultimo = null;
-        }
-        return tiquete;
-    }
 
-    public boolean estaVacia() {
-        return primero == null;
+        Tiquete tiquete = inicio.getTiquete(); // guardar el tiquete que está al frente
+
+        if (inicio == fin) {
+            // solo un elemento
+            inicio = fin = null;
+        } else {
+            inicio = inicio.getSiguiente(); // avanzar el inicio
+        }
+
+        return tiquete; // devolver el tiquete atendido
     }
 
     public int contarElementos() {
         int contador = 0;
-        NodoTiquete actual = primero;
+        NodoTiquete actual = inicio;
         while (actual != null) {
             contador++;
             actual = actual.getSiguiente();
@@ -51,11 +57,11 @@ public class ColaTiquetes {
     }
 
     public String mostrarCola() {
-        if (estaVacia()) {
+        if (esVacia()) {
             return "No hay tiquetes en la cola.";
         }
         StringBuilder sb = new StringBuilder("=== COLA DE TIQUETES ===\n");
-        NodoTiquete actual = primero;
+        NodoTiquete actual = inicio;
         while (actual != null) {
             sb.append(actual.getTiquete().toString()).append("\n\n");
             actual = actual.getSiguiente();

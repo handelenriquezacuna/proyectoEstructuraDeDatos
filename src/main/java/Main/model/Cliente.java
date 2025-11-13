@@ -5,9 +5,9 @@ package Main.model;
  */
 public class Cliente {
 
-    private String nombre;
-    private String id;
-    private int edad;
+    private final String nombre;
+    private final String id;
+    private final int edad;
 
     public Cliente(String nombre, String id, int edad) {
         this.nombre = nombre;
@@ -33,6 +33,6 @@ public class Cliente {
 
     @Override
     public String toString() {
-        return nombre + " | ID: " + id + " | Edad: " + edad + (esPreferencial() ? " (Preferencial)" : "");
+        return "Datos | " + "Nombre: " + nombre + " | Id: " + id + " | Edad: " + edad + "";
     }
 }
