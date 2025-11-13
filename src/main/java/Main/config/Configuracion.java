@@ -72,6 +72,15 @@ public class Configuracion {
                     "Configuración Inicial",
                     JOptionPane.QUESTION_MESSAGE
             );
+
+            // Solicitar cantidad de cajas
+            this.cantidadStr = JOptionPane.showInputDialog(
+                    null,
+                    "Ingrese la cantidad de cajas (mínimo 3):",
+                    "Configuración Inicial",
+                    JOptionPane.QUESTION_MESSAGE
+            );
+
             try {
                 this.cantidadCajas = Integer.parseInt(cantidadStr);
                 if (this.cantidadCajas < 3) {

@@ -180,4 +180,40 @@ public class ArchivoManager {
             System.err.println("Error escribiendo archivo: " + e.getMessage());
         }
     }
+
+    /**
+     * Guarda el estado de las colas en colasTemp.txt
+     * Usa el método de serialización de ColaTiquetes
+     */
+    public void guardarColas(String rutaArchivo, Main.model.ColaTiquetes cola) {
+        try {
+            String contenidoSerializado = cola.serializarCola();
+            escribirArchivo(rutaArchivo, contenidoSerializado);
+            System.out.println("Colas guardadas en: " + rutaArchivo);
+        } catch (Exception e) {
+            System.err.println("Error guardando colas: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Carga las colas desde colasTemp.txt
+     * Retorna un objeto ColaTiquetes con los datos restaurados
+     */
+    public Main.model.ColaTiquetes cargarColas(String rutaArchivo) {
+        Main.model.ColaTiquetes cola = new Main.model.ColaTiquetes();
+
+        try {
+            if (existeArchivo(rutaArchivo)) {
+                String contenido = leerArchivo(rutaArchivo);
+                cola.deserializarCola(contenido);
+                System.out.println("Colas cargadas desde: " + rutaArchivo);
+            } else {
+                System.out.println("No existe archivo de colas previo, iniciando con cola vacía");
+            }
+        } catch (Exception e) {
+            System.err.println("Error cargando colas: " + e.getMessage());
+        }
+
+        return cola;
+    }
 }

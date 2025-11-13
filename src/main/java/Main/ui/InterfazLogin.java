@@ -39,7 +39,7 @@ public class InterfazLogin {
             archivoManager.guardarConfiguracion(RUTA_USUARIOS, usuarios);
 
             JOptionPane.showMessageDialog(null, """
-                                                Archivo de usuarios generado autom\u00e1ticamente con dos usuarios iniciales:
+                                                Archivo de usuarios generado automaticamente con dos usuarios iniciales:
                                                 admin/1234
                                                 user1/abcd""",
                     "Usuarios creados", JOptionPane.INFORMATION_MESSAGE);

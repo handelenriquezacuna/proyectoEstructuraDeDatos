@@ -4,6 +4,9 @@ import Main.config.Configuracion;
 import Main.model.Cliente;
 import Main.model.Tiquete;
 import Main.model.ColaTiquetes;
+import Main.model.GrafoComplementarios;
+import Main.persistence.ArchivoManager;
+import Main.servicios.ServicioTipoCambio;
 
 import javax.swing.JOptionPane;
 
@@ -14,10 +17,20 @@ public class InterfazPrincipal {
 
     private Configuracion configuracion;
     private ColaTiquetes colaTiquetes;
+    private GrafoComplementarios grafoComplementarios;
+    private ArchivoManager archivoManager;
+    private ServicioTipoCambio servicioTipoCambio;
+
+    private static final String ARCHIVO_COLAS = "src/main/resources/data/colasTemp.txt";
 
     public InterfazPrincipal(Configuracion configuracion) {
         this.configuracion = configuracion;
-        this.colaTiquetes = new ColaTiquetes(); // Tu estructura personalizada
+        this.archivoManager = new ArchivoManager();
+        this.grafoComplementarios = new GrafoComplementarios();
+        this.servicioTipoCambio = new ServicioTipoCambio();
+
+        // Cargar colas desde archivo (persistencia)
+        this.colaTiquetes = archivoManager.cargarColas(ARCHIVO_COLAS);
     }
 
     public void iniciarSistema() {
@@ -80,9 +93,10 @@ public class InterfazPrincipal {
                 JOptionPane.showMessageDialog(null, "Función en desarrollo: Reportes");
                 break;
             case 5:
-                JOptionPane.showMessageDialog(null, "Función en desarrollo: Tipo de Cambio");
+                consultarTipoCambio();
                 break;
             case 6:
+                guardarEstadoSistema();
                 JOptionPane.showMessageDialog(null, "¡Gracias por usar el sistema!");
                 System.exit(0);
                 break;
@@ -131,5 +145,43 @@ public class InterfazPrincipal {
 
         JOptionPane.showMessageDialog(null,
                 "Cliente atendido:\n\n" + siguiente.toString());
+
+        // Mostrar servicios complementarios
+        String complementarios = grafoComplementarios.obtenerComplementarios(siguiente.getTramite());
+        if (complementarios != null) {
+            JOptionPane.showMessageDialog(null,
+                    "Recuerde ofrecer: " + complementarios,
+                    "Servicios Complementarios",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    /**
+     * Consulta el tipo de cambio del día
+     */
+    private void consultarTipoCambio() {
+        try {
+            String resultado = servicioTipoCambio.obtenerTipoCambio();
+            JOptionPane.showMessageDialog(null, resultado,
+                    "Tipo de Cambio del Día",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,
+                    "Error consultando tipo de cambio: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Guarda el estado de las colas antes de salir
+     */
+    private void guardarEstadoSistema() {
+        try {
+            archivoManager.guardarColas(ARCHIVO_COLAS, colaTiquetes);
+            System.out.println("Estado del sistema guardado exitosamente");
+        } catch (Exception e) {
+            System.err.println("Error guardando estado del sistema: " + e.getMessage());
+        }
     }
 }

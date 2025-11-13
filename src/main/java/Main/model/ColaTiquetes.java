@@ -62,4 +62,53 @@ public class ColaTiquetes {
         }
         return sb.toString();
     }
+
+    /**
+     * Serializa la cola completa usando recursión
+     * Retorna una cadena con todos los tiquetes serializados (uno por línea)
+     */
+    public String serializarCola() {
+        StringBuilder sb = new StringBuilder();
+        serializarColaRecursivo(primero, sb);
+        return sb.toString();
+    }
+
+    private void serializarColaRecursivo(NodoTiquete nodo, StringBuilder sb) {
+        if (nodo == null) {
+            return; // Caso base
+        }
+        sb.append(nodo.getTiquete().serializar()).append("\n");
+        serializarColaRecursivo(nodo.getSiguiente(), sb); // Recursión
+    }
+
+    /**
+     * Deserializa y carga tiquetes desde un String usando recursión
+     */
+    public void deserializarCola(String contenido) {
+        if (contenido == null || contenido.trim().isEmpty()) {
+            return;
+        }
+        String[] lineas = contenido.split("\n");
+        deserializarLineasRecursivo(lineas, 0);
+    }
+
+    private void deserializarLineasRecursivo(String[] lineas, int indice) {
+        if (indice >= lineas.length) {
+            return; // Caso base: fin del array
+        }
+
+        String linea = lineas[indice].trim();
+        if (!linea.isEmpty()) {
+            Tiquete tiquete = Tiquete.deserializar(linea);
+            if (tiquete != null) {
+                encolar(tiquete);
+            }
+        }
+
+        deserializarLineasRecursivo(lineas, indice + 1); // Recursión
+    }
+
+    public NodoTiquete getPrimero() {
+        return primero;
+    }
 }
