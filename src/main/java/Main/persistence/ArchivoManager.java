@@ -1,5 +1,6 @@
 package Main.persistence;
 
+import Main.model.ColaTiquetes;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -182,13 +183,19 @@ public class ArchivoManager {
     }
 
     /**
-     * Guarda el estado de las colas en colasTemp.txt
-     * Usa el método de serialización de ColaTiquetes
+     * Guarda el estado de las colas en colasTemp.txt Usa el método de
+     * serialización de ColaTiquetes
      */
-    public void guardarColas(String rutaArchivo, Main.model.ColaTiquetes cola) {
+    public void guardarColas(String rutaArchivo, ColaTiquetes[] colas) {
         try {
-            String contenidoSerializado = cola.serializarCola();
-            escribirArchivo(rutaArchivo, contenidoSerializado);
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < colas.length; i++) {
+                sb.append("CAJA ").append(i).append("\n");
+                sb.append(colas[i].serializarCola()).append("\n---\n");
+            }
+
+            escribirArchivo(rutaArchivo, sb.toString());
             System.out.println("Colas guardadas en: " + rutaArchivo);
         } catch (Exception e) {
             System.err.println("Error guardando colas: " + e.getMessage());
@@ -196,24 +203,35 @@ public class ArchivoManager {
     }
 
     /**
-     * Carga las colas desde colasTemp.txt
-     * Retorna un objeto ColaTiquetes con los datos restaurados
+     * Carga las colas desde colasTemp.txt Retorna un objeto ColaTiquetes con
+     * los datos restaurados
      */
-    public Main.model.ColaTiquetes cargarColas(String rutaArchivo) {
-        Main.model.ColaTiquetes cola = new Main.model.ColaTiquetes();
+    public ColaTiquetes[] cargarColas(String rutaArchivo, int cantidadCajas) {
+
+        ColaTiquetes[] colas = new ColaTiquetes[cantidadCajas];
+        for (int i = 0; i < cantidadCajas; i++) {
+            colas[i] = new ColaTiquetes(); // por defecto vacía
+        }
 
         try {
-            if (existeArchivo(rutaArchivo)) {
-                String contenido = leerArchivo(rutaArchivo);
-                cola.deserializarCola(contenido);
-                System.out.println("Colas cargadas desde: " + rutaArchivo);
-            } else {
-                System.out.println("No existe archivo de colas previo, iniciando con cola vacía");
+            if (!existeArchivo(rutaArchivo)) {
+                System.out.println("No existe archivo, usando colas vacías");
+                return colas;
             }
+
+            String contenido = leerArchivo(rutaArchivo);
+            String[] secciones = contenido.split("---");
+
+            for (int i = 0; i < secciones.length && i < cantidadCajas; i++) {
+                colas[i].deserializarCola(secciones[i]);
+            }
+
+            System.out.println("Colas cargadas desde archivo");
+
         } catch (Exception e) {
             System.err.println("Error cargando colas: " + e.getMessage());
         }
 
-        return cola;
+        return colas;
     }
 }

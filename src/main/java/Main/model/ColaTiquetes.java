@@ -56,6 +56,9 @@ public class ColaTiquetes {
         return contador;
     }
 
+    
+    
+    
     public String mostrarCola() {
         if (esVacia()) {
             return "No hay tiquetes en la cola.";
@@ -68,6 +71,7 @@ public class ColaTiquetes {
         }
         return sb.toString();
     }
+    
 
     /**
      * Serializa la cola completa usando recursión

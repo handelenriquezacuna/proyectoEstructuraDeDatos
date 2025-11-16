@@ -7,6 +7,7 @@ import Main.model.ColaTiquetes;
 import Main.model.GrafoComplementarios;
 import Main.persistence.ArchivoManager;
 import Main.servicios.ServicioTipoCambio;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -16,7 +17,7 @@ import javax.swing.JOptionPane;
 public class InterfazPrincipal {
 
     private Configuracion configuracion;
-    private ColaTiquetes colaTiquetes;
+    private ColaTiquetes[] colasPorCaja;
     private GrafoComplementarios grafoComplementarios;
     private ArchivoManager archivoManager;
     private ServicioTipoCambio servicioTipoCambio;
@@ -28,9 +29,12 @@ public class InterfazPrincipal {
         this.archivoManager = new ArchivoManager();
         this.grafoComplementarios = new GrafoComplementarios();
         this.servicioTipoCambio = new ServicioTipoCambio();
-
+        this.colasPorCaja = new ColaTiquetes[configuracion.getCantidadCajas()];
+        for (int i = 0; i < colasPorCaja.length; i++) {
+            colasPorCaja[i] = new ColaTiquetes();
+        }
         // Cargar colas desde archivo (persistencia)
-        this.colaTiquetes = archivoManager.cargarColas(ARCHIVO_COLAS);
+        this.colasPorCaja = archivoManager.cargarColas(ARCHIVO_COLAS,  configuracion.getCantidadCajas());
     }
 
     public void iniciarSistema() {
@@ -84,10 +88,13 @@ public class InterfazPrincipal {
                 crearTiquete();
                 break;
             case 2:
-                atenderTiquete();
+                int caja = Integer.parseInt(
+                        JOptionPane.showInputDialog("¿Qué caja desea atender?")
+                );
+                atenderTiquete(caja);
                 break;
             case 3:
-                JOptionPane.showMessageDialog(null, colaTiquetes.mostrarCola());
+                 JOptionPane.showMessageDialog(null, mostrarEstadoColas());
                 break;
             case 4:
                 JOptionPane.showMessageDialog(null, "Función en desarrollo: Reportes");
@@ -120,33 +127,75 @@ public class InterfazPrincipal {
             String tipo = JOptionPane.showInputDialog("Ingrese el tipo (P, A, B):").toUpperCase();
 
             Cliente cliente = new Cliente(nombre, id, edad);
-            int cajaAsignada = 1; // Por ahora, caja fija
+
+            int cajaAsignada = asignarCajaSegunTipo(tipo);
 
             Tiquete tiquete = new Tiquete(cliente, tramite, tipo, cajaAsignada);
-            colaTiquetes.encolar(tiquete);
+
+            // ENCOLAR en la caja correspondiente
+            colasPorCaja[cajaAsignada - 1].encolar(tiquete);
 
             JOptionPane.showMessageDialog(null,
                     "Tiquete creado exitosamente:\n\n" + tiquete.toString()
-                    + "\nPersonas delante de usted: " + (colaTiquetes.contarElementos() - 1));
+                    + "\nAsignado a la caja: " + cajaAsignada
+                    + "\nPersonas delante de usted: " + (colasPorCaja[cajaAsignada - 1].contarElementos() - 1));
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al crear tiquete: " + e.getMessage());
         }
     }
 
+    private int asignarCajaSegunTipo(String tipo) {
+
+        if (tipo.equals("P")) {
+            return configuracion.getCajaPreferencial();
+        }
+
+        if (tipo.equals("A")) {
+            return configuracion.getCajaRapida();
+        }
+
+        int[] cajasNormales = configuracion.getCajasNormales();
+
+        int cajaConMenos = cajasNormales[0];
+        int min = colasPorCaja[cajaConMenos - 1].contarElementos();
+
+        for (int caja : cajasNormales) {
+            int cantidad = colasPorCaja[caja - 1].contarElementos();
+            if (cantidad < min) {
+                min = cantidad;
+                cajaConMenos = caja;
+            }
+        }
+
+        return cajaConMenos;
+    }
+
     // 🧾 Atender tiquete
-    private void atenderTiquete() {
-        if (colaTiquetes.esVacia()) {
-            JOptionPane.showMessageDialog(null, "No hay tiquetes en espera.");
+    private void atenderTiquete(int numeroCaja) {
+
+        // Validar caja
+        if (numeroCaja < 1 || numeroCaja > colasPorCaja.length) {
+            JOptionPane.showMessageDialog(null, "Número de caja inválido.");
             return;
         }
 
-        Tiquete siguiente = colaTiquetes.desencolar();
+        ColaTiquetes cola = colasPorCaja[numeroCaja - 1];
+
+        if (cola.esVacia()) {
+            JOptionPane.showMessageDialog(null,
+                    "La caja " + numeroCaja + " no tiene clientes en espera.");
+            return;
+        }
+
+        // Atender siguiente cliente
+        Tiquete siguiente = cola.desencolar();
         siguiente.atender();
 
         JOptionPane.showMessageDialog(null,
-                "Cliente atendido:\n\n" + siguiente.toString());
+                "Cliente atendido en caja " + numeroCaja + ":\n\n" + siguiente.toString());
 
-        // Mostrar servicios complementarios
+        // Servicios complementarios
         String complementarios = grafoComplementarios.obtenerComplementarios(siguiente.getTramite());
         if (complementarios != null) {
             JOptionPane.showMessageDialog(null,
@@ -155,6 +204,21 @@ public class InterfazPrincipal {
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }
+    
+    private String mostrarEstadoColas() {
+        StringBuilder sb = new StringBuilder("=== ESTADO DE TODAS LAS COLAS ===\n\n");
+
+        for (int i = 0; i < colasPorCaja.length; i++) {
+            sb.append("Caja ").append(i + 1).append(":\n")
+                    .append(colasPorCaja[i].mostrarCola()) // <--- usa tu método existente
+                    .append("\n\n");
+        }
+
+        return sb.toString();
+    }
+ 
+    
+    
 
     /**
      * Consulta el tipo de cambio del día
@@ -178,8 +242,17 @@ public class InterfazPrincipal {
      */
     private void guardarEstadoSistema() {
         try {
-            archivoManager.guardarColas(ARCHIVO_COLAS, colaTiquetes);
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < colasPorCaja.length; i++) {
+                sb.append("#CAJA ").append(i).append("\n");
+                sb.append(colasPorCaja[i].serializarCola()).append("\n");
+            }
+
+            archivoManager.escribirArchivo(ARCHIVO_COLAS, sb.toString());
+
             System.out.println("Estado del sistema guardado exitosamente");
+
         } catch (Exception e) {
             System.err.println("Error guardando estado del sistema: " + e.getMessage());
         }
