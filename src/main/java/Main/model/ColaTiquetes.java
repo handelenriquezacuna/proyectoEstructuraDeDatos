@@ -75,7 +75,7 @@ public class ColaTiquetes {
      */
     public String serializarCola() {
         StringBuilder sb = new StringBuilder();
-        serializarColaRecursivo(primero, sb);
+        serializarColaRecursivo(inicio, sb);
         return sb.toString();
     }
 
@@ -89,6 +89,7 @@ public class ColaTiquetes {
 
     /**
      * Deserializa y carga tiquetes desde un String usando recursión
+     *
      */
     public void deserializarCola(String contenido) {
         if (contenido == null || contenido.trim().isEmpty()) {
@@ -115,6 +116,6 @@ public class ColaTiquetes {
     }
 
     public NodoTiquete getPrimero() {
-        return primero;
+        return inicio;
     }
 }

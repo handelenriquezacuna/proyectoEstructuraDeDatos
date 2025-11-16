@@ -12,7 +12,7 @@ public class Tiquete {
     private final Cliente cliente;
     private final String tramite;
     private final String tipo; // P, A, B
-    private final LocalDateTime horaCreacion;
+    private LocalDateTime horaCreacion;
     private LocalDateTime horaAtencion;
     private final int numeroCaja;
 

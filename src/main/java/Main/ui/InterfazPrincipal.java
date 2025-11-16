@@ -135,7 +135,7 @@ public class InterfazPrincipal {
 
     // 🧾 Atender tiquete
     private void atenderTiquete() {
-        if (colaTiquetes.estaVacia()) {
+        if (colaTiquetes.esVacia()) {
             JOptionPane.showMessageDialog(null, "No hay tiquetes en espera.");
             return;
         }
