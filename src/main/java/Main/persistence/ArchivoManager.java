@@ -5,6 +5,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -234,4 +235,44 @@ public class ArchivoManager {
 
         return colas;
     }
+    
+    /**
+     * Agrega una línea al final del archivo (modo append)
+     */
+    public void agregarLinea(String rutaArchivo, String linea) {
+        try {
+            crearDirectorios(rutaArchivo);
+            try (FileWriter fw = new FileWriter(rutaArchivo, true); BufferedWriter bw = new BufferedWriter(fw)) {
+
+                bw.write(linea);
+                bw.newLine();
+            }
+        } catch (Exception e) {
+            System.err.println("Error agregando línea al archivo: " + e.getMessage());
+        }
+    }
+    
+    /**
+ * Genera un archivo de reporte con nombre basado en fecha y hora
+ */
+    public String generarReporte(String contenido) {
+
+        String carpeta = "src/main/resources/data/reportes/";
+        File dir = new File(carpeta);
+
+        if (!dir.exists()) {
+            dir.mkdirs(); // crea la carpeta si no existe
+        }
+
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+
+        String nombre = "reporte_" + java.time.LocalDateTime.now().format(formato) + ".txt";
+
+        String ruta = carpeta + nombre;
+
+        escribirArchivo(ruta, contenido);
+
+        return ruta;
+    }
+
 }

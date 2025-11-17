@@ -6,7 +6,10 @@ import Main.model.Tiquete;
 import Main.model.ColaTiquetes;
 import Main.model.GrafoComplementarios;
 import Main.persistence.ArchivoManager;
+import Main.persistence.ReporteAtencion;
 import Main.servicios.ServicioTipoCambio;
+import java.io.File;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -94,10 +97,10 @@ public class InterfazPrincipal {
                 atenderTiquete(caja);
                 break;
             case 3:
-                 JOptionPane.showMessageDialog(null, mostrarEstadoColas());
+                JOptionPane.showMessageDialog(null, mostrarEstadoColas());
                 break;
             case 4:
-                JOptionPane.showMessageDialog(null, "Función en desarrollo: Reportes");
+                new ReporteAtencion().generarReporte();
                 break;
             case 5:
                 consultarTipoCambio();
@@ -203,7 +206,28 @@ public class InterfazPrincipal {
                     "Servicios Complementarios",
                     JOptionPane.INFORMATION_MESSAGE);
         }
+        registrarTransaccion(siguiente, numeroCaja);
     }
+    
+    private void registrarTransaccion(Tiquete t, int caja) {
+        String ruta = "src/main/resources/data/registroTransacciones.txt";
+      
+
+        // ✔ FORMATO LIMPIO DE FECHA/HORA
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String fechaHora = java.time.LocalDateTime.now().format(formato);
+
+        String linea = caja + ";"
+                + t.getCliente().getId() + ";"
+                + t.getCliente().getNombre() + ";"
+                + t.getTramite() + ";"
+                + t.getTipo() + ";"
+                + t.getTiempoAtencion() + ";"
+                + fechaHora;  // ← AQUÍ EL CAMBIO
+
+        archivoManager.agregarLinea(ruta, linea);
+    }
+    
     
     private String mostrarEstadoColas() {
         StringBuilder sb = new StringBuilder("=== ESTADO DE TODAS LAS COLAS ===\n\n");

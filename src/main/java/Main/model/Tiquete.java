@@ -56,6 +56,12 @@ public class Tiquete {
     public LocalDateTime getHoraAtencion() {
         return horaAtencion;
     }
+    
+    public long getTiempoAtencion() {
+    if (horaAtencion == null) return -1;
+    return java.time.Duration.between(horaCreacion, horaAtencion).toSeconds();
+}
+
 
     /**
      * Serializa el tiquete a formato String para persistencia
