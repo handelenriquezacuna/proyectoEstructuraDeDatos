@@ -52,7 +52,7 @@ public class GestorTiquetes {
         if (personasAntes == 0 && !cajaAsignada.estaOcupada()) {
             JOptionPane.showMessageDialog(null,
                     "Caja: " + cajaAsignada.getNumero() + "\n" +
-                            "¡Es su turno! Pase a ser atendido.");
+                            "Es su turno! Pase a ser atendido.");
         } else {
             JOptionPane.showMessageDialog(null,
                     "Caja: " + cajaAsignada.getNumero() + "\n" +

@@ -19,13 +19,58 @@ public class ColaTiquetes {
         return inicio == null;
     }
 
-    public void encolar(Tiquete tiquete) {
-        NodoTiquete n = new NodoTiquete(tiquete);
+    /**
+     * Encola usando prioridad: P > A > B
+     */
+    public void encolar(Tiquete nuevoTiquete) {
+        NodoTiquete nuevo = new NodoTiquete(nuevoTiquete);
+
+        // Caso 1: cola vacía
         if (esVacia()) {
-            inicio = fin = n;
-        } else {
-            fin.setSiguiente(n);
-            fin = n;
+            inicio = fin = nuevo;
+            return;
+        }
+
+        NodoTiquete actual = inicio;
+        NodoTiquete anterior = null;
+
+        // Buscar la posición correcta según prioridad
+        while (actual != null && compararPrioridad(actual.getTiquete(), nuevoTiquete) >= 0) {
+            anterior = actual;
+            actual = actual.getSiguiente();
+        }
+
+        // Caso 2: insertar al inicio (tiene mayor prioridad que todos)
+        if (anterior == null) {
+            nuevo.setSiguiente(inicio);
+            inicio = nuevo;
+            return;
+        }
+
+        // Caso 3: insertar en medio o final
+        anterior.setSiguiente(nuevo);
+        nuevo.setSiguiente(actual);
+
+        if (actual == null) {
+            fin = nuevo; // si se insertó al final
+        }
+    }
+
+    /**
+     * Compara prioridad: Devuelve positivo si t1 tiene MAYOR prioridad que t2.
+     */
+    private int compararPrioridad(Tiquete t1, Tiquete t2) {
+        return prioridad(t1.getTipo()) - prioridad(t2.getTipo());
+    }
+
+    private int prioridad(String tipo) {
+        switch (tipo) {
+            case "P":
+                return 3;
+            case "A":
+                return 2;
+            default:
+                return 1; // B
         }
     }
 
@@ -34,16 +79,15 @@ public class ColaTiquetes {
             return null;
         }
 
-        Tiquete tiquete = inicio.getTiquete(); // guardar el tiquete que está al frente
+        Tiquete t = inicio.getTiquete();
 
         if (inicio == fin) {
-            // solo un elemento
             inicio = fin = null;
         } else {
-            inicio = inicio.getSiguiente(); // avanzar el inicio
+            inicio = inicio.getSiguiente();
         }
 
-        return tiquete; // devolver el tiquete atendido
+        return t;
     }
 
     public int contarElementos() {
@@ -68,11 +112,10 @@ public class ColaTiquetes {
         }
         return sb.toString();
     }
-    
 
     /**
-     * Serializa la cola completa usando recursión
-     * Retorna una cadena con todos los tiquetes serializados (uno por línea)
+     * Serializa la cola completa usando recursión Retorna una cadena con todos
+     * los tiquetes serializados (uno por línea)
      */
     public String serializarCola() {
         StringBuilder sb = new StringBuilder();
