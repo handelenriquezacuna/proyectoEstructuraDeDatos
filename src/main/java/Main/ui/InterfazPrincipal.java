@@ -122,31 +122,77 @@ public class InterfazPrincipal {
 
     // 🧾 Crear tiquete
     private void crearTiquete() {
-        try {
-            String nombre = JOptionPane.showInputDialog("Ingrese el nombre del cliente:");
-            String id = JOptionPane.showInputDialog("Ingrese el ID del cliente:");
-            int edad = Integer.parseInt(JOptionPane.showInputDialog("Ingrese la edad del cliente:"));
-            String tramite = JOptionPane.showInputDialog("Ingrese el trámite (Depósitos, Retiros, Cambio de Divisas):");
-            String tipo = JOptionPane.showInputDialog("Ingrese el tipo (P, A, B):").toUpperCase();
+    try {
+        // Nombre e ID del cliente
+        String nombre = JOptionPane.showInputDialog("Ingrese el nombre del cliente:");
+        String id = JOptionPane.showInputDialog("Ingrese el ID del cliente:");
 
-            Cliente cliente = new Cliente(nombre, id, edad);
+        // Validar edad
+        int edad = -1;
+        do {
+            try {
+                edad = Integer.parseInt(JOptionPane.showInputDialog("Ingrese la edad del cliente:"));
+                if (edad < 0) JOptionPane.showMessageDialog(null, "Edad inválida, intente de nuevo.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Ingrese un número válido para la edad.");
+            }
+        } while (edad < 0);
 
-            int cajaAsignada = asignarCajaSegunTipo(tipo);
+        // Preguntar condiciones preferenciales
+        boolean discapacidad = JOptionPane.showConfirmDialog(null, 
+                "¿El cliente tiene alguna discapacidad?", "Preferencial", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
 
-            Tiquete tiquete = new Tiquete(cliente, tramite, tipo, cajaAsignada);
+        boolean embarazada = JOptionPane.showConfirmDialog(null, 
+                "¿El cliente está embarazada?", "Preferencial", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
 
-            // ENCOLAR en la caja correspondiente
-            colasPorCaja[cajaAsignada - 1].encolar(tiquete);
+        boolean empresarial = JOptionPane.showConfirmDialog(null, 
+                "¿El cliente es empresarial?", "Preferencial", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
 
+        // Crear cliente con todas las condiciones
+        Cliente cliente = new Cliente(nombre, id, edad, discapacidad, embarazada, empresarial);
+
+        // Selección de trámite
+        String tramite = (String) JOptionPane.showInputDialog(
+                null,
+                "Seleccione el trámite:",
+                "Trámite",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new String[]{"Depósitos", "Retiros", "Cambio de Divisas"},
+                "Depósitos"
+        );
+
+        // Determinar tipo automáticamente
+        String tipo = cliente.esPreferencial() ? "P" :
+                JOptionPane.showInputDialog("Ingrese el tipo de tiquete (A: 1 trámite, B: 2+ trámites):").toUpperCase();
+
+        // Asignar caja según tipo
+        int cajaAsignada = asignarCajaSegunTipo(tipo);
+
+        // Crear y encolar tiquete
+        Tiquete tiquete = new Tiquete(cliente, tramite, tipo, cajaAsignada);
+        colasPorCaja[cajaAsignada - 1].encolar(tiquete);
+
+        // Mostrar información al cliente
+        int personasAntes = colasPorCaja[cajaAsignada - 1].contarElementos() - 1;
+
+        if (personasAntes == 0) {
             JOptionPane.showMessageDialog(null,
                     "Tiquete creado exitosamente:\n\n" + tiquete.toString()
                     + "\nAsignado a la caja: " + cajaAsignada
-                    + "\nPersonas delante de usted: " + (colasPorCaja[cajaAsignada - 1].contarElementos() - 1));
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al crear tiquete: " + e.getMessage());
+                    + "\n¡Es su turno! Pase a ser atendido.");
+        } else {
+            JOptionPane.showMessageDialog(null,
+                    "Tiquete creado exitosamente:\n\n" + tiquete.toString()
+                    + "\nAsignado a la caja: " + cajaAsignada
+                    + "\nPersonas delante de usted: " + personasAntes);
         }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Error al crear tiquete: " + e.getMessage());
+        e.printStackTrace();
     }
+}
 
     private int asignarCajaSegunTipo(String tipo) {
 

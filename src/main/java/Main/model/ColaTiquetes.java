@@ -56,9 +56,6 @@ public class ColaTiquetes {
         return contador;
     }
 
-    
-    
-    
     public String mostrarCola() {
         if (esVacia()) {
             return "No hay tiquetes en la cola.";
