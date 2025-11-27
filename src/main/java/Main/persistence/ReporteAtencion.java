@@ -82,5 +82,6 @@ public class ReporteAtencion {
 
         JOptionPane.showMessageDialog(null,
                 "Reporte generado exitosamente:\n" + archivoGenerado);
+        JOptionPane.showMessageDialog(null, contenidoReporte);
     }
 }
