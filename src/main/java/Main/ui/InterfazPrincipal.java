@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 
 /**
  * Interfaz principal del sistema usando JOptionPane
+ * @author handelenriquez
  */
 public class InterfazPrincipal {
 

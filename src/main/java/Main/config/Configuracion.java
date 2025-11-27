@@ -9,6 +9,7 @@ import java.util.Map;
 /**
  * Configuración del Sistema
  * Maneja la configuración inicial y persistente del sistema en el banco
+ *  * @author handelenriquez
  */
 public class Configuracion {
     private String nombreBanco;

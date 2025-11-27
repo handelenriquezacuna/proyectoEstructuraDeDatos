@@ -6,6 +6,7 @@ import Main.ui.InterfazLogin;
 
 /**
  * Clase Main del Sistema de Gestión Bancaria
+ *  * @author handelenriquez
  */
 public class Main {
     public static void main(String[] args) {

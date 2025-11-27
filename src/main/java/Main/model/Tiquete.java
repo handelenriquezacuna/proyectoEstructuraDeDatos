@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * Clase que representa un tiquete del sistema bancario
- *
+ * @author handelenriquez
  */
 public class Tiquete {
 

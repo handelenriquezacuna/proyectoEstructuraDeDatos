@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * Servicio para consultar el tipo de cambio del BCCR mediante webscraping
- * Implementado sin librerías externas, solo usando HttpURLConnection
+ * @author handelenriquez
  */
 public class ServicioTipoCambio {
 
@@ -135,7 +135,7 @@ public class ServicioTipoCambio {
 
         // Verificar si esta fila tiene datos válidos (mínimo 4 columnas: entidad, nombre, compra, venta)
         if (celdas.length >= 4) {
-            String compra = limpiarTexto(celdas[2]);
+            String compra = limpiarTexto(celdas[2] );
             String venta = limpiarTexto(celdas[3]);
 
             // Validar que sean números

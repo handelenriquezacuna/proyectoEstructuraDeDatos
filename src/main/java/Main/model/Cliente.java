@@ -2,6 +2,7 @@ package Main.model;
 
 /**
  * Clase que representa un cliente del banco
+ * @author handelenriquez
  */
 public class Cliente {
 
