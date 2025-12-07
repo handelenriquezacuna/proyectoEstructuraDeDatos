@@ -3,87 +3,89 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Main.model;
+
 import javax.swing.*;
+
 /**
  *
  * @author Josue
  */
 public class GestorTiquetes {
-    private GestorCajas gestorCajas;
+
+    private final GestorCajas gestorCajas;
 
     public GestorTiquetes(GestorCajas gestorCajas) {
         this.gestorCajas = gestorCajas;
     }
 
     public void crearTiquete() {
-
         String nombre = JOptionPane.showInputDialog("Nombre del cliente:");
         String id = JOptionPane.showInputDialog("Identificación:");
         int edad = Integer.parseInt(JOptionPane.showInputDialog("Edad:"));
-
         Cliente cliente = new Cliente(nombre, id, edad);
 
-        // Seleccionar trámite
         String tramite = (String) JOptionPane.showInputDialog(
-                null,
-                "Seleccione el trámite:",
-                "Trámite",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
+                null, "Seleccione el trámite:", "Trámite",
+                JOptionPane.QUESTION_MESSAGE, null,
                 new String[]{"Depósitos", "Retiros", "Cambio de Divisas"},
                 "Depósitos"
         );
 
-        // Seleccionar tipo (automático según el profe si querés)
+        // Tipo será P/A/B
         String tipo = seleccionarTipo(cliente);
 
-        // Buscar la caja según el tipo
+        // Caja basada en P/A/B
         Caja cajaAsignada = asignarCaja(tipo);
 
-        // Crear el tiquete
         Tiquete tiquete = new Tiquete(cliente, tramite, tipo, cajaAsignada.getNumero());
-
-        // Encolar
         cajaAsignada.getCola().encolar(tiquete);
 
-        // Mostrar información al cliente
         int personasAntes = cajaAsignada.getCola().contarElementos() - 1;
-
         if (personasAntes == 0 && !cajaAsignada.estaOcupada()) {
             JOptionPane.showMessageDialog(null,
-                    "Caja: " + cajaAsignada.getNumero() + "\n" +
-                            "Es su turno! Pase a ser atendido.");
+                    "Caja: " + cajaAsignada.getNumero() + "\n"
+                    + "Es su turno! Pase a ser atendido.");
         } else {
             JOptionPane.showMessageDialog(null,
-                    "Caja: " + cajaAsignada.getNumero() + "\n" +
-                            "Personas antes que usted: " + personasAntes);
+                    "Caja: " + cajaAsignada.getNumero() + "\n"
+                    + "Personas antes que usted: " + personasAntes);
         }
     }
 
     private String seleccionarTipo(Cliente c) {
-        if (c.getEdad() >= 65) return "P";
+        if (c.esPreferencial()) {
+            return "P";
+        }
 
-        String tipo = (String) JOptionPane.showInputDialog(
-                null,
-                "Seleccione el tipo de tiquete:",
-                "Tipo",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                new String[]{"A (1 trámite)", "B (2+ trámites)"},
-                "A (1 trámite)"
-        );
-
-        return tipo.startsWith("A") ? "A" : "B";
+        String opcion;
+        do {
+            opcion = JOptionPane.showInputDialog(
+                    null,
+                    "Ingrese el tipo de tiquete:\n 1: 1 trámite\n 2: 2+ trámites",
+                    "Tipo de Tiquete",
+                    JOptionPane.QUESTION_MESSAGE
+            );
+            if (opcion == null) {
+                JOptionPane.showMessageDialog(null, "Operación cancelada. Se asigna 2 (B) por defecto.");
+                opcion = "2";
+            } else {
+                opcion = opcion.trim();
+            }
+        } while (!opcion.equals("1") && !opcion.equals("2"));
+        
+        return opcion.equals("1") ? "A" : "B";
     }
 
     private Caja asignarCaja(String tipo) {
         switch (tipo) {
             case "P":
-                return gestorCajas.getCajaPreferencial();
+                return gestorCajas.getCajaPreferencial(); // Caja 1
             case "A":
-                return gestorCajas.getCajaRapida();
+                return gestorCajas.getCajaRapida();       // Caja 2
+            case "B":
             default:
-                return gestorCajas.buscarCajaNormalConMenosClientes();
+                return gestorCajas.buscarCajaNormalConMenosClientes(); // Caja 3, 4, 5...
         }
     }
+
 }

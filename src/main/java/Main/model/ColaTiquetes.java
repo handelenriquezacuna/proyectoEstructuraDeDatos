@@ -18,14 +18,14 @@ public class ColaTiquetes {
     public boolean esVacia() {
         return inicio == null;
     }
+    
+    public NodoTiquete getPrimero() {
+        return inicio;
+    }
 
-    /**
-     * Encola usando prioridad: P > A > B
-     */
-    public void encolar(Tiquete nuevoTiquete) {
+    public void encolar(Tiquete nuevoTiquete) { //Encola usando prioridad: P > A > B
         NodoTiquete nuevo = new NodoTiquete(nuevoTiquete);
 
-        // Caso 1: cola vacía
         if (esVacia()) {
             inicio = fin = nuevo;
             return;
@@ -34,43 +34,40 @@ public class ColaTiquetes {
         NodoTiquete actual = inicio;
         NodoTiquete anterior = null;
 
-        // Buscar la posición correcta según prioridad
-        while (actual != null && compararPrioridad(actual.getTiquete(), nuevoTiquete) >= 0) {
+        while (actual != null
+                && compararPrioridad(actual.getTiquete(), nuevoTiquete) >= 0) { // Buscar la posición correcta según prioridad
             anterior = actual;
             actual = actual.getSiguiente();
         }
 
-        // Caso 2: insertar al inicio (tiene mayor prioridad que todos)
         if (anterior == null) {
             nuevo.setSiguiente(inicio);
             inicio = nuevo;
             return;
         }
 
-        // Caso 3: insertar en medio o final
         anterior.setSiguiente(nuevo);
         nuevo.setSiguiente(actual);
 
         if (actual == null) {
-            fin = nuevo; // si se insertó al final
+            fin = nuevo;
         }
     }
 
-    /**
-     * Compara prioridad: Devuelve positivo si t1 tiene MAYOR prioridad que t2.
-     */
-    private int compararPrioridad(Tiquete t1, Tiquete t2) {
+    private int compararPrioridad(Tiquete t1, Tiquete t2) { // Devuelve positivo si t1 tiene MAYOR prioridad que t2
         return prioridad(t1.getTipo()) - prioridad(t2.getTipo());
     }
 
     private int prioridad(String tipo) {
         switch (tipo) {
             case "P":
-                return 3;
+                return 3; // Preferencial
             case "A":
-                return 2;
+                return 2; // 1 trámite 
+            case "B":
+                return 1; // 2+ trámites 
             default:
-                return 1; // B
+                return 0;
         }
     }
 
@@ -102,9 +99,9 @@ public class ColaTiquetes {
 
     public String mostrarCola() {
         if (esVacia()) {
-            return "No hay tiquetes en la cola.";
+            return "No hay tiquetes en la cola";
         }
-        StringBuilder sb = new StringBuilder("=== COLA DE TIQUETES ===\n");
+        StringBuilder sb = new StringBuilder("*** COLA DE TIQUETES ***\n");
         NodoTiquete actual = inicio;
         while (actual != null) {
             sb.append(actual.getTiquete().toString()).append("\n\n");
@@ -113,39 +110,33 @@ public class ColaTiquetes {
         return sb.toString();
     }
 
-    /**
-     * Serializa la cola completa usando recursión Retorna una cadena con todos
-     * los tiquetes serializados (uno por línea)
-     */
+    //Serializa la cola completa usando recursión Retorna una cadena con todos los tiquetes serializados (uno por línea)
     public String serializarCola() {
         StringBuilder sb = new StringBuilder();
-        serializarColaRecursivo(inicio, sb);
+        ColaRecursivo(inicio, sb);
         return sb.toString();
     }
 
-    private void serializarColaRecursivo(NodoTiquete nodo, StringBuilder sb) {
+    private void ColaRecursivo(NodoTiquete nodo, StringBuilder sb) {
         if (nodo == null) {
-            return; // Caso base
+            return;
         }
         sb.append(nodo.getTiquete().serializar()).append("\n");
-        serializarColaRecursivo(nodo.getSiguiente(), sb); // Recursión
+        ColaRecursivo(nodo.getSiguiente(), sb);
     }
-
-    /**
-     * Deserializa y carga tiquetes desde un String usando recursión
-     *
-     */
+    
+    //Deserializa y carga tiquetes desde un String usando recursión
     public void deserializarCola(String contenido) {
         if (contenido == null || contenido.trim().isEmpty()) {
             return;
         }
         String[] lineas = contenido.split("\n");
-        deserializarLineasRecursivo(lineas, 0);
+        LineasRecursivo(lineas, 0);
     }
 
-    private void deserializarLineasRecursivo(String[] lineas, int indice) {
+    private void LineasRecursivo(String[] lineas, int indice) {
         if (indice >= lineas.length) {
-            return; // Caso base: fin del array
+            return;
         }
 
         String linea = lineas[indice].trim();
@@ -155,11 +146,6 @@ public class ColaTiquetes {
                 encolar(tiquete);
             }
         }
-
-        deserializarLineasRecursivo(lineas, indice + 1); // Recursión
-    }
-
-    public NodoTiquete getPrimero() {
-        return inicio;
+        LineasRecursivo(lineas, indice + 1); // Recursión
     }
 }

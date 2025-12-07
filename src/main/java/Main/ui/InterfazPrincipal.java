@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 
 /**
  * Interfaz principal del sistema usando JOptionPane
+ *
  * @author handelenriquez
  */
 public class InterfazPrincipal {
@@ -38,7 +39,7 @@ public class InterfazPrincipal {
             colasPorCaja[i] = new ColaTiquetes();
         }
         // Cargar colas desde archivo (persistencia)
-        this.colasPorCaja = archivoManager.cargarColas(ARCHIVO_COLAS,  configuracion.getCantidadCajas());
+        this.colasPorCaja = archivoManager.cargarColas(ARCHIVO_COLAS, configuracion.getCantidadCajas());
     }
 
     public void iniciarSistema() {
@@ -123,93 +124,103 @@ public class InterfazPrincipal {
 
     // 🧾 Crear tiquete
     private void crearTiquete() {
-    try {
-        // Nombre e ID del cliente
-        String nombre = JOptionPane.showInputDialog("Ingrese el nombre del cliente:");
-        String id = JOptionPane.showInputDialog("Ingrese el ID del cliente:");
+        try {
+            String nombre = JOptionPane.showInputDialog("Ingrese el nombre del cliente:");
+            String id = JOptionPane.showInputDialog("Ingrese el ID del cliente:");
 
-        // Validar edad
-        int edad = -1;
-        do {
-            try {
-                edad = Integer.parseInt(JOptionPane.showInputDialog("Ingrese la edad del cliente:"));
-                if (edad < 0) JOptionPane.showMessageDialog(null, "Edad inválida, intente de nuevo.");
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Ingrese un número válido para la edad.");
+            int edad = -1;
+            do {
+                try {
+                    edad = Integer.parseInt(JOptionPane.showInputDialog("Ingrese la edad del cliente:"));
+                    if (edad < 0) {
+                        JOptionPane.showMessageDialog(null, "Edad inválida, intente de nuevo.");
+                    }
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Ingrese un número válido para la edad.");
+                }
+            } while (edad < 0);
+
+            boolean discapacidad = JOptionPane.showConfirmDialog(
+                    null, "¿El cliente tiene alguna discapacidad?", "Preferencial", JOptionPane.YES_NO_OPTION
+            ) == JOptionPane.YES_OPTION;
+            boolean embarazada = JOptionPane.showConfirmDialog(
+                    null, "¿El cliente está embarazada?", "Preferencial", JOptionPane.YES_NO_OPTION
+            ) == JOptionPane.YES_OPTION;
+            boolean empresarial = JOptionPane.showConfirmDialog(
+                    null, "¿El cliente es empresarial?", "Preferencial", JOptionPane.YES_NO_OPTION
+            ) == JOptionPane.YES_OPTION;
+
+            Cliente cliente = new Cliente(nombre, id, edad, discapacidad, embarazada, empresarial);
+
+            String tramite = (String) JOptionPane.showInputDialog(
+                    null,
+                    "Seleccione el trámite:",
+                    "Trámite",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    new String[]{"Depósitos", "Retiros", "Cambio de Divisas"},
+                    "Depósitos"
+            );
+
+            // Tipo A/B/P con prompt 1/2
+            String tipo;
+            if (cliente.esPreferencial()) {
+                tipo = "P";
+            } else {
+                String opcion;
+                do {
+                    opcion = JOptionPane.showInputDialog(
+                            "Ingrese el tipo de tiquete:\n1: 1 trámite\n2: 2+ trámites"
+                    );
+                    if (opcion == null) {
+                        JOptionPane.showMessageDialog(null, "Operación cancelada. Se asigna 2 (B) por defecto.");
+                        opcion = "2";
+                    } else {
+                        opcion = opcion.trim();
+                    }
+                } while (!opcion.equals("1") && !opcion.equals("2"));
+                tipo = opcion.equals("1") ? "A" : "B";
             }
-        } while (edad < 0);
 
-        // Preguntar condiciones preferenciales
-        boolean discapacidad = JOptionPane.showConfirmDialog(null, 
-                "¿El cliente tiene alguna discapacidad?", "Preferencial", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+            int cajaAsignada = asignarCajaSegunTipo(tipo);
 
-        boolean embarazada = JOptionPane.showConfirmDialog(null, 
-                "¿El cliente está embarazada?", "Preferencial", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+            Tiquete tiquete = new Tiquete(cliente, tramite, tipo, cajaAsignada);
+            colasPorCaja[cajaAsignada - 1].encolar(tiquete);
 
-        boolean empresarial = JOptionPane.showConfirmDialog(null, 
-                "¿El cliente es empresarial?", "Preferencial", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+            int personasAntes = colasPorCaja[cajaAsignada - 1].contarElementos() - 1;
+            if (personasAntes == 0) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Tiquete creado exitosamente:\n\n" + tiquete.toString()
+                        + "\nAsignado a la caja: " + cajaAsignada
+                        + "\n¡Es su turno! Pase a ser atendido."
+                );
+            } else {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Tiquete creado exitosamente:\n\n" + tiquete.toString()
+                        + "\nAsignado a la caja: " + cajaAsignada
+                        + "\nPersonas delante de usted: " + personasAntes
+                );
+            }
 
-        // Crear cliente con todas las condiciones
-        Cliente cliente = new Cliente(nombre, id, edad, discapacidad, embarazada, empresarial);
-
-        // Selección de trámite
-        String tramite = (String) JOptionPane.showInputDialog(
-                null,
-                "Seleccione el trámite:",
-                "Trámite",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                new String[]{"Depósitos", "Retiros", "Cambio de Divisas"},
-                "Depósitos"
-        );
-
-        // Determinar tipo automáticamente
-        String tipo = cliente.esPreferencial() ? "P" :
-                JOptionPane.showInputDialog("Ingrese el tipo de tiquete (A: 1 trámite, B: 2+ trámites):").toUpperCase();
-
-        // Asignar caja según tipo
-        int cajaAsignada = asignarCajaSegunTipo(tipo);
-
-        // Crear y encolar tiquete
-        Tiquete tiquete = new Tiquete(cliente, tramite, tipo, cajaAsignada);
-        colasPorCaja[cajaAsignada - 1].encolar(tiquete);
-
-        // Mostrar información al cliente
-        int personasAntes = colasPorCaja[cajaAsignada - 1].contarElementos() - 1;
-
-        if (personasAntes == 0) {
-            JOptionPane.showMessageDialog(null,
-                    "Tiquete creado exitosamente:\n\n" + tiquete.toString()
-                    + "\nAsignado a la caja: " + cajaAsignada
-                    + "\n¡Es su turno! Pase a ser atendido.");
-        } else {
-            JOptionPane.showMessageDialog(null,
-                    "Tiquete creado exitosamente:\n\n" + tiquete.toString()
-                    + "\nAsignado a la caja: " + cajaAsignada
-                    + "\nPersonas delante de usted: " + personasAntes);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al crear tiquete: " + e.getMessage());
+            e.printStackTrace();
         }
-
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(null, "Error al crear tiquete: " + e.getMessage());
-        e.printStackTrace();
     }
-}
 
     private int asignarCajaSegunTipo(String tipo) {
-
         if (tipo.equals("P")) {
-            return configuracion.getCajaPreferencial();
+            return configuracion.getCajaPreferencial(); // 1
         }
-
         if (tipo.equals("A")) {
-            return configuracion.getCajaRapida();
+            return configuracion.getCajaRapida();       // 2
         }
-
+        // B -> cajas normales 3+
         int[] cajasNormales = configuracion.getCajasNormales();
-
         int cajaConMenos = cajasNormales[0];
         int min = colasPorCaja[cajaConMenos - 1].contarElementos();
-
         for (int caja : cajasNormales) {
             int cantidad = colasPorCaja[caja - 1].contarElementos();
             if (cantidad < min) {
@@ -217,7 +228,6 @@ public class InterfazPrincipal {
                 cajaConMenos = caja;
             }
         }
-
         return cajaConMenos;
     }
 
@@ -255,10 +265,9 @@ public class InterfazPrincipal {
         }
         registrarTransaccion(siguiente, numeroCaja);
     }
-    
+
     private void registrarTransaccion(Tiquete t, int caja) {
         String ruta = "src/main/resources/data/registroTransacciones.txt";
-      
 
         // ✔ FORMATO LIMPIO DE FECHA/HORA
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -274,8 +283,7 @@ public class InterfazPrincipal {
 
         archivoManager.agregarLinea(ruta, linea);
     }
-    
-    
+
     private String mostrarEstadoColas() {
         StringBuilder sb = new StringBuilder("=== ESTADO DE TODAS LAS COLAS ===\n\n");
 
@@ -287,9 +295,6 @@ public class InterfazPrincipal {
 
         return sb.toString();
     }
- 
-    
-    
 
     /**
      * Consulta el tipo de cambio del día
@@ -313,19 +318,17 @@ public class InterfazPrincipal {
      */
     private void guardarEstadoSistema() {
         try {
+            // Usa el formato con separador " --- " que espera ArchivoManager.cargarColas
             StringBuilder sb = new StringBuilder();
-
             for (int i = 0; i < colasPorCaja.length; i++) {
-                sb.append("#CAJA ").append(i).append("\n");
-                sb.append(colasPorCaja[i].serializarCola()).append("\n");
+                sb.append("CAJA ").append(i).append("\n");
+                sb.append(colasPorCaja[i].serializarCola()).append("\n --- \n");
             }
-
             archivoManager.escribirArchivo(ARCHIVO_COLAS, sb.toString());
-
             System.out.println("Estado del sistema guardado exitosamente");
-
         } catch (Exception e) {
             System.err.println("Error guardando estado del sistema: " + e.getMessage());
         }
     }
+
 }

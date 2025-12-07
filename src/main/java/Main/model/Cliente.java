@@ -2,6 +2,7 @@ package Main.model;
 
 /**
  * Clase que representa un cliente del banco
+ *
  * @author handelenriquez
  */
 public class Cliente {
@@ -31,11 +32,6 @@ public class Cliente {
         this.discapacidad = discapacidad;
         this.embarazada = embarazada;
         this.empresarial = empresarial;
-    }
-
-    // Método para determinar si el cliente es preferencial
-    public boolean esPreferencial() {
-        return edad >= 65 || discapacidad || embarazada || empresarial;
     }
 
     // Getters
@@ -73,6 +69,11 @@ public class Cliente {
 
     public void setEmpresarial(boolean empresarial) {
         this.empresarial = empresarial;
+    }
+    
+    // Método para determinar si el cliente es preferencial
+    public boolean esPreferencial() {
+        return edad >= 65 || discapacidad || embarazada || empresarial;
     }
 
     @Override

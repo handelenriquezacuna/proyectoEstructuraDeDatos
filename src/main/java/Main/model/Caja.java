@@ -9,9 +9,9 @@ package Main.model;
  * @author Josue
  */
 public class Caja {
-    private int numero;
+    private final int numero;
     private boolean ocupada;
-    private ColaTiquetes cola;  // la cola asignada a esa caja
+    private final ColaTiquetes cola;  // la cola asignada a esa caja
 
     public Caja(int numero) {
         this.numero = numero;

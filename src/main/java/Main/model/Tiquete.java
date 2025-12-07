@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * Clase que representa un tiquete del sistema bancario
+ *
  * @author handelenriquez
  */
 public class Tiquete {
@@ -56,17 +57,16 @@ public class Tiquete {
     public LocalDateTime getHoraAtencion() {
         return horaAtencion;
     }
-    
+
     public long getTiempoAtencion() {
-    if (horaAtencion == null) return -1;
-    return java.time.Duration.between(horaCreacion, horaAtencion).toSeconds();
-}
+        if (horaAtencion == null) {
+            return -1;
+        }
+        return java.time.Duration.between(horaCreacion, horaAtencion).toSeconds();
+    }
 
-
-    /**
-     * Serializa el tiquete a formato String para persistencia
-     * Formato: nombre|id|edad|tramite|tipo|caja|horaCreacion|horaAtencion
-     */
+    
+    //Serializa el tiquete a formato String 
     public String serializar() {
         StringBuilder sb = new StringBuilder();
         sb.append(cliente.getNombre()).append("|");
@@ -80,9 +80,8 @@ public class Tiquete {
         return sb.toString();
     }
 
-    /**
-     * Deserializa un String a Tiquete
-     */
+    
+    //Deserializa un String a Tiquete
     public static Tiquete deserializar(String linea) {
         try {
             String[] partes = linea.split("\\|");
@@ -94,7 +93,7 @@ public class Tiquete {
             String id = partes[1];
             int edad = Integer.parseInt(partes[2]);
             String tramite = partes[3];
-            String tipo = partes[4];
+            String tipo = partes[4]; // "P", "A" o "B"
             int caja = Integer.parseInt(partes[5]);
             LocalDateTime horaCreacion = LocalDateTime.parse(partes[6]);
             LocalDateTime horaAtencion = partes[7].equals("null") ? null : LocalDateTime.parse(partes[7]);
@@ -103,9 +102,8 @@ public class Tiquete {
             Tiquete tiquete = new Tiquete(cliente, tramite, tipo, caja);
             tiquete.horaCreacion = horaCreacion;
             tiquete.horaAtencion = horaAtencion;
-
             return tiquete;
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             System.err.println("Error deserializando tiquete: " + e.getMessage());
             return null;
         }
@@ -120,4 +118,5 @@ public class Tiquete {
                 + " | Creado: " + horaCreacion
                 + " | Atención: " + getEstadoAtencion();
     }
+
 }
