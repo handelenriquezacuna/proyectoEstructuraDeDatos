@@ -8,6 +8,7 @@ import Main.model.GrafoComplementarios;
 import Main.persistence.ArchivoManager;
 import Main.persistence.ReporteAtencion;
 import Main.servicios.ServicioTipoCambio;
+import java.awt.HeadlessException;
 import java.io.File;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -38,7 +39,6 @@ public class InterfazPrincipal {
         for (int i = 0; i < colasPorCaja.length; i++) {
             colasPorCaja[i] = new ColaTiquetes();
         }
-        // Cargar colas desde archivo (persistencia)
         this.colasPorCaja = archivoManager.cargarColas(ARCHIVO_COLAS, configuracion.getCantidadCajas());
     }
 
@@ -122,7 +122,7 @@ public class InterfazPrincipal {
         }
     }
 
-    // 🧾 Crear tiquete
+    // Crear tiquete
     private void crearTiquete() {
         try {
             String nombre = JOptionPane.showInputDialog("Ingrese el nombre del cliente:");
@@ -162,7 +162,6 @@ public class InterfazPrincipal {
                     "Depósitos"
             );
 
-            // Tipo A/B/P con prompt 1/2
             String tipo;
             if (cliente.esPreferencial()) {
                 tipo = "P";
@@ -203,21 +202,18 @@ public class InterfazPrincipal {
                         + "\nPersonas delante de usted: " + personasAntes
                 );
             }
-
-        } catch (Exception e) {
+        } catch (HeadlessException e) {
             JOptionPane.showMessageDialog(null, "Error al crear tiquete: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     private int asignarCajaSegunTipo(String tipo) {
         if (tipo.equals("P")) {
-            return configuracion.getCajaPreferencial(); // 1
+            return configuracion.getCajaPreferencial(); 
         }
         if (tipo.equals("A")) {
-            return configuracion.getCajaRapida();       // 2
+            return configuracion.getCajaRapida();       
         }
-        // B -> cajas normales 3+
         int[] cajasNormales = configuracion.getCajasNormales();
         int cajaConMenos = cajasNormales[0];
         int min = colasPorCaja[cajaConMenos - 1].contarElementos();
@@ -231,7 +227,7 @@ public class InterfazPrincipal {
         return cajaConMenos;
     }
 
-    // 🧾 Atender tiquete
+    // Atender tiquete
     private void atenderTiquete(int numeroCaja) {
 
         // Validar caja
@@ -269,7 +265,7 @@ public class InterfazPrincipal {
     private void registrarTransaccion(Tiquete t, int caja) {
         String ruta = "src/main/resources/data/registroTransacciones.txt";
 
-        // ✔ FORMATO LIMPIO DE FECHA/HORA
+        //FORMATO LIMPIO DE FECHA/HORA
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String fechaHora = java.time.LocalDateTime.now().format(formato);
 
@@ -279,7 +275,7 @@ public class InterfazPrincipal {
                 + t.getTramite() + ";"
                 + t.getTipo() + ";"
                 + t.getTiempoAtencion() + ";"
-                + fechaHora;  // ← AQUÍ EL CAMBIO
+                + fechaHora;  // 
 
         archivoManager.agregarLinea(ruta, linea);
     }
@@ -296,16 +292,14 @@ public class InterfazPrincipal {
         return sb.toString();
     }
 
-    /**
-     * Consulta el tipo de cambio del día
-     */
+    //Consulta el tipo de cambio del día
     private void consultarTipoCambio() {
         try {
             String resultado = servicioTipoCambio.obtenerTipoCambio();
             JOptionPane.showMessageDialog(null, resultado,
                     "Tipo de Cambio del Día",
                     JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception e) {
+        } catch (HeadlessException e) {
             JOptionPane.showMessageDialog(null,
                     "Error consultando tipo de cambio: " + e.getMessage(),
                     "Error",
@@ -313,12 +307,9 @@ public class InterfazPrincipal {
         }
     }
 
-    /**
-     * Guarda el estado de las colas antes de salir
-     */
+    //Guarda el estado de las colas antes de salir 
     private void guardarEstadoSistema() {
         try {
-            // Usa el formato con separador " --- " que espera ArchivoManager.cargarColas
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < colasPorCaja.length; i++) {
                 sb.append("CAJA ").append(i).append("\n");
@@ -330,5 +321,4 @@ public class InterfazPrincipal {
             System.err.println("Error guardando estado del sistema: " + e.getMessage());
         }
     }
-
 }
