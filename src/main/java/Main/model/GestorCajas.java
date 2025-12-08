@@ -77,7 +77,7 @@ public class GestorCajas {
             nodo = nodo.getSiguiente();
         }
     }
-
+    // Getters
     public Caja getCajaPreferencial() {
         return cajaPreferencial;
     }

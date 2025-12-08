@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 package Main.ui;
 
 import Main.config.Configuracion;
@@ -15,15 +20,19 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-/**
- * Interfaz principal del sistema usando JOptionPane
- *
- * @author handelenriquez
- */
+/* 
+* Menu principal del sistema bancario 
+* todo se hace con JOptionPane porque era requisito
+* @author handelenriquez
+*/
+
+
+
+
 public class InterfazPrincipal {
 
     private Configuracion configuracion;
-    private ColaTiquetes[] colasPorCaja;
+    private ColaTiquetes[] colasPorCaja;  // una cola por cada caja
     private GrafoComplementarios grafoComplementarios;
     private ArchivoManager archivoManager;
     private ServicioTipoCambio servicioTipoCambio;

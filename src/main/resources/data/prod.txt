@@ -7,4 +7,4 @@ CajasNormales=3,4,5
 CajaRapida=2
 PrimerEjecucion=false
 CajaPreferencial=1
-NombreBanco=ABC
+NombreBanco=JOHNJAIRO

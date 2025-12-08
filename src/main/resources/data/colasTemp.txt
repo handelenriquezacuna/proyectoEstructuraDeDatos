@@ -2,14 +2,12 @@ CAJA 0
 
  --- 
 CAJA 1
-dayana|700740589|18|Retiros|A|2|2025-12-07T00:27:35.791348900|null
 
  --- 
 CAJA 2
 
  --- 
 CAJA 3
-sonia|900740898|35|Retiros|B|4|2025-12-07T00:28:31.831695400|null
 
  --- 
 CAJA 4

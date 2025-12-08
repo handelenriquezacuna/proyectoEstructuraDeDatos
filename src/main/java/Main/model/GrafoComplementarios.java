@@ -1,15 +1,22 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 package Main.model;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-/**
- * Grafo de servicios complementarios usando lista de adyacencia simple
- * Implementado con estructuras de datos simples y recursión
- */
+/*
+* Grafo para los servicios complementarios
+* Lo hicimos con recursion porque era requisito del proyecto
+* Un while hubiera sido mas sencillo pero bueno
+* @author handelenriquez
+*/
 public class GrafoComplementarios {
 
-    // Nodo para la lista de adyacencia
+    // cada nodo tiene un servicio y sus complementarios
     private class NodoGrafo {
         String servicio;
         ListaComplementarios complementarios;
@@ -22,7 +29,7 @@ public class GrafoComplementarios {
         }
     }
 
-    // Lista simple para almacenar complementarios
+    // lista para guardar los complementarios de cada servicio
     private class ListaComplementarios {
         private NodoComplementario primero;
 
@@ -75,7 +82,7 @@ public class GrafoComplementarios {
             return primero == null;
         }
     }
-
+    // el primer nodo del grafo
     private NodoGrafo cabeza;
     private static final String ARCHIVO_COMPLEMENTARIOS = "src/main/resources/data/complementarios.txt";
 
@@ -84,9 +91,7 @@ public class GrafoComplementarios {
         cargarDesdeArchivo();
     }
 
-    /**
-     * Carga el grafo desde archivo usando recursión
-     */
+    // carga los datos del archivo
     private void cargarDesdeArchivo() {
         try (BufferedReader reader = new BufferedReader(new FileReader(ARCHIVO_COMPLEMENTARIOS))) {
             cargarLineasRecursivo(reader);
@@ -96,9 +101,7 @@ public class GrafoComplementarios {
         }
     }
 
-    /**
-     * Lee y procesa líneas del archivo de forma recursiva
-     */
+    // lee linea por linea del archivo (recursivo por requisito)
     private void cargarLineasRecursivo(BufferedReader reader) throws Exception {
         String linea = reader.readLine();
         if (linea == null) {
@@ -115,9 +118,8 @@ public class GrafoComplementarios {
         cargarLineasRecursivo(reader);
     }
 
-    /**
-     * Procesa una línea del formato "Servicio->Complementario"
-     */
+    // procesa cada linea del archivo
+    // formato: Depositos->Seguros
     private void procesarLinea(String linea) {
         if (linea.contains("->")) {
             String[] partes = linea.split("->");
@@ -129,17 +131,13 @@ public class GrafoComplementarios {
         }
     }
 
-    /**
-     * Agrega una relación servicio -> complementario
-     */
+    // agrega la relacion al grafo
     private void agregarRelacion(String servicio, String complementario) {
         NodoGrafo nodo = buscarOCrearNodo(servicio);
         nodo.complementarios.agregar(complementario);
     }
 
-    /**
-     * Busca un nodo en el grafo de forma recursiva, o lo crea si no existe
-     */
+    // busca el nodo o lo crea si no existe
     private NodoGrafo buscarOCrearNodo(String servicio) {
         if (cabeza == null) {
             cabeza = new NodoGrafo(servicio);
@@ -167,9 +165,7 @@ public class GrafoComplementarios {
         return buscarOCrearNodoRecursivo(actual.siguiente, servicio, actual);
     }
 
-    /**
-     * Obtiene los complementarios de un servicio
-     */
+    // devuelve los complementarios de un servicio
     public String obtenerComplementarios(String servicio) {
         NodoGrafo nodo = buscarNodoRecursivo(cabeza, servicio);
         if (nodo != null && !nodo.complementarios.estaVacia()) {
@@ -178,9 +174,7 @@ public class GrafoComplementarios {
         return null;
     }
 
-    /**
-     * Busca un nodo en el grafo de forma recursiva
-     */
+    // busca un nodo por su nombre
     private NodoGrafo buscarNodoRecursivo(NodoGrafo actual, String servicio) {
         if (actual == null) {
             return null; // Caso base: no encontrado
@@ -191,11 +185,9 @@ public class GrafoComplementarios {
         return buscarNodoRecursivo(actual.siguiente, servicio); // Recursión
     }
 
-    /**
-     * Muestra el grafo completo (para debugging)
-     */
+    // para ver todo el grafo (debugging)
     public String mostrarGrafo() {
-        StringBuilder sb = new StringBuilder("=== GRAFO DE COMPLEMENTARIOS ===\n");
+        StringBuilder sb = new StringBuilder("GRAFO DE COMPLEMENTARIOS\n");
         mostrarGrafoRecursivo(cabeza, sb);
         return sb.toString();
     }

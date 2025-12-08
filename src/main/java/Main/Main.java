@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 package Main;
 
 import Main.config.Configuracion;
@@ -5,12 +10,12 @@ import Main.ui.InterfazLogin;
 
 
 /**
- * Clase Main del Sistema de Gestión Bancaria
- *  * @author handelenriquez
+ * Clase principal para ejecucion de programa de atencion.
+ * @author handelenriquez
  */
 public class Main {
     public static void main(String[] args) {
-     System.out.println("=== SISTEMA DE GESTIÓN BANCARIA ===");
+     System.out.println("SISTEMA DE GESTION DE ATENCION");
         System.out.println("Proyecto Final - Estructuras de Datos");
         System.out.println("Iniciando sistema...\n");
 

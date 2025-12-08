@@ -11,6 +11,8 @@ import java.util.Map;
 
 /**
  * Clase encargada del manejo de archivos para persistencia
+ *
+ * @author jomas
  */
 public class ArchivoManager {
 

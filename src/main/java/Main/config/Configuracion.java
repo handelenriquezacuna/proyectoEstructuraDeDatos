@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 package Main.config;
 
 import Main.persistence.ArchivoManager;
@@ -7,9 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Configuración del Sistema
- * Maneja la configuración inicial y persistente del sistema en el banco
- *  * @author handelenriquez
+ * Configuracion del Sistema
+ * Maneja la configuracion inicial y persistente del sistema en el banco
+ * @author handelenriquez
  */
 public class Configuracion {
     private String nombreBanco;
@@ -29,7 +34,7 @@ public class Configuracion {
     }
     
     /**
-     * Carga la configuración desde archivo o solicita configuración inicial
+     * Carga la configuracion desde archivo o solicita configuracion inicial
      */
     private void cargarConfiguracion() {
         try{

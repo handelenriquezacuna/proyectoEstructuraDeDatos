@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 package Main.persistence;
 
 import java.util.Arrays;
@@ -6,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
 /**
- *
+ * @author jomas
  * Clase para generar reportes del registro historico
  */
 
@@ -71,7 +76,7 @@ public class ReporteAtencion {
         double promedioGeneral = tiempoGeneral / (double) totalClientes;
 
         String contenidoReporte =
-                "=== REPORTE DE ATENCIONES ===\n\n"
+                "REPORTE DE ATENCIONES\n\n"
                 + "1. Caja que más clientes atendió: " + mayorCaja + "\n"
                 + "2. Total clientes atendidos: " + totalClientes + "\n"
                 + "3. Caja con mejor tiempo promedio: " + mejorCaja + "\n"

@@ -7,19 +7,17 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Servicio para consultar el tipo de cambio del BCCR mediante webscraping
- * @author handelenriquez
- */
+/*
+* Consulta el tipo de cambio del BCCR
+* Al principio intentamos usar SOAP pero daba muchos problemas, asi que mejor usamos webscraping
+* @author handelenriquez
+*/
 public class ServicioTipoCambio {
 
-    // URL de la página de tipo de cambio de ventanilla del BCCR
+    // pagina del BCCR con los tipos de cambio
     private static final String URL_TC_VENTANILLA = "https://gee.bccr.fi.cr/IndicadoresEconomicos/Cuadros/frmConsultaTCVentanilla.aspx";
 
-    /**
-     * Obtiene el tipo de cambio del día desde el BCCR mediante webscraping
-     * Retorna un String con la información formateada
-     */
+    // obtiene el tipo de cambio, si falla devuelve uno simulado
     public String obtenerTipoCambio() {
         try {
             // Realizar webscraping de la página del BCCR
@@ -44,9 +42,7 @@ public class ServicioTipoCambio {
         }
     }
 
-    /**
-     * Clase interna para almacenar información del tipo de cambio
-     */
+    // clase auxiliar para guardar los datos del tipo de cambio
     private static class TipoCambioInfo {
         String compra;
         String venta;
@@ -59,9 +55,7 @@ public class ServicioTipoCambio {
         }
     }
 
-    /**
-     * Obtiene el HTML completo de una página usando GET
-     */
+    // hace el GET a la pagina y trae el HTML
     private String obtenerHTMLPagina(String urlString) {
         HttpURLConnection conexion = null;
         BufferedReader reader = null;
@@ -98,10 +92,8 @@ public class ServicioTipoCambio {
         }
     }
 
-    /**
-     * Extrae el tipo de cambio del HTML usando recursión
-     * Busca la primera fila de datos en la tabla
-     */
+    // saca el tipo de cambio del HTML
+    // usamos recursion porque es requisito del proyecto
     private TipoCambioInfo extraerTipoCambioDeHTML(String html) {
         try {
             // Buscar todas las filas <tr> de la tabla
@@ -113,9 +105,7 @@ public class ServicioTipoCambio {
         }
     }
 
-    /**
-     * Busca recursivamente la primera fila con datos de tipo de cambio
-     */
+    // busca la primera fila que tenga datos de tipo de cambio
     private TipoCambioInfo buscarPrimeraFilaDatosRecursivo(String html, int posicionInicio) {
         // Buscar el siguiente <tr>
         int inicioTr = html.indexOf("<tr", posicionInicio);
@@ -149,9 +139,7 @@ public class ServicioTipoCambio {
         return buscarPrimeraFilaDatosRecursivo(html, finTr + 5);
     }
 
-    /**
-     * Extrae todas las celdas <td> de una fila usando recursión
-     */
+    // extrae las celdas td de una fila
     private String[] extraerCeldasDeFila(String fila) {
         // Contar cuántas celdas hay
         int numCeldas = contarCeldasRecursivo(fila, 0, 0);
@@ -166,9 +154,7 @@ public class ServicioTipoCambio {
         return celdas;
     }
 
-    /**
-     * Cuenta el número de celdas <td> recursivamente
-     */
+    // cuenta cuantas celdas hay (recursivo)
     private int contarCeldasRecursivo(String fila, int posicion, int contador) {
         int inicio = fila.indexOf("<td", posicion);
         if (inicio == -1) {
@@ -183,9 +169,7 @@ public class ServicioTipoCambio {
         return contarCeldasRecursivo(fila, fin + 5, contador + 1); // Recursión
     }
 
-    /**
-     * Extrae el contenido de las celdas recursivamente
-     */
+    // extrae el contenido de cada celda
     private void extraerCeldasRecursivo(String fila, int posicion, String[] celdas, int indice) {
         if (indice >= celdas.length) {
             return; // Caso base: todas las celdas extraídas
@@ -210,9 +194,7 @@ public class ServicioTipoCambio {
         extraerCeldasRecursivo(fila, finTd + 5, celdas, indice + 1);
     }
 
-    /**
-     * Limpia el texto HTML (elimina tags y espacios)
-     */
+    // limpia el texto quitando tags html y espacios de mas
     private String limpiarTexto(String texto) {
         if (texto == null) {
             return "";
@@ -225,9 +207,7 @@ public class ServicioTipoCambio {
         return texto.trim().replaceAll("\\s+", " ");
     }
 
-    /**
-     * Elimina tags HTML de forma recursiva
-     */
+    // quita los tags html del texto (recursivo)
     private String eliminarTagsRecursivo(String texto) {
         int inicio = texto.indexOf("<");
         if (inicio == -1) {
@@ -244,9 +224,7 @@ public class ServicioTipoCambio {
         return eliminarTagsRecursivo(nuevoTexto);
     }
 
-    /**
-     * Verifica si un string es un número válido
-     */
+    // verifica si es un numero valido
     private boolean esNumeroValido(String texto) {
         if (texto == null || texto.isEmpty()) {
             return false;
@@ -262,9 +240,7 @@ public class ServicioTipoCambio {
         }
     }
 
-    /**
-     * Lee la respuesta del BufferedReader de forma recursiva
-     */
+    // lee todo el contenido del reader (recursivo)
     private StringBuilder leerRespuestaRecursivo(BufferedReader reader, StringBuilder acumulador) throws Exception {
         String linea = reader.readLine();
         if (linea == null) {
@@ -274,9 +250,7 @@ public class ServicioTipoCambio {
         return leerRespuestaRecursivo(reader, acumulador); // Recursión
     }
 
-    /**
-     * Formatea el tipo de cambio del BCCR para mostrar
-     */
+    // formatea los datos para mostrar bonito
     private String formatearTipoCambioBCCR(TipoCambioInfo info) {
         try {
             // Normalizar números (reemplazar comas por puntos)
@@ -308,10 +282,8 @@ public class ServicioTipoCambio {
         }
     }
 
-    /**
-     * Método alternativo: simulación de tipo de cambio si no hay conexión
-     * (útil para desarrollo/testing o cuando falla el webscraping)
-     */
+    // tipo de cambio simulado por si falla la conexion
+    // los valores son aproximados pero sirve para probar
     public String obtenerTipoCambioSimulado() {
         return String.format(
             "=== TIPO DE CAMBIO DEL DÍA (SIMULADO) ===\n\n" +

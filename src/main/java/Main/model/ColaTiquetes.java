@@ -1,19 +1,15 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Main.model;
 
 import javax.swing.JOptionPane;
-
-/**
- *
- * @author Josue
- */
+/*
+* Cola de tiquetes con prioridad
+* P (preferencial) tiene mas prioridad que A y B
+* @author Josue
+*/
 public class ColaTiquetes {
 
-    private NodoTiquete inicio;
-    private NodoTiquete fin;
+    private NodoTiquete inicio;  // primer nodo
+    private NodoTiquete fin;     // ultimo nodo
 
     public boolean esVacia() {
         return inicio == null;
@@ -110,42 +106,45 @@ public class ColaTiquetes {
         return sb.toString();
     }
 
-    //Serializa la cola completa usando recursión Retorna una cadena con todos los tiquetes serializados (uno por línea)
+    // convierte la cola a texto para guardar en archivo
+    // usamos recursion por requisito del proyecto
     public String serializarCola() {
         StringBuilder sb = new StringBuilder();
-        ColaRecursivo(inicio, sb);
+        pasarATexto(inicio, sb);
         return sb.toString();
     }
 
-    private void ColaRecursivo(NodoTiquete nodo, StringBuilder sb) {
+    // metodo recursivo para serializar
+    private void pasarATexto(NodoTiquete nodo, StringBuilder sb) {
         if (nodo == null) {
             return;
         }
         sb.append(nodo.getTiquete().serializar()).append("\n");
-        ColaRecursivo(nodo.getSiguiente(), sb);
+        pasarATexto(nodo.getSiguiente(), sb);
     }
-    
-    //Deserializa y carga tiquetes desde un String usando recursión
+
+    // carga los tiquetes desde un texto
     public void deserializarCola(String contenido) {
         if (contenido == null || contenido.trim().isEmpty()) {
             return;
         }
         String[] lineas = contenido.split("\n");
-        LineasRecursivo(lineas, 0);
+        cargarLineas(lineas, 0);
     }
 
-    private void LineasRecursivo(String[] lineas, int indice) {
-        if (indice >= lineas.length) {
+    // va leyendo linea por linea de forma recursiva
+    private void cargarLineas(String[] lineas, int i) {
+        if (i >= lineas.length) {
             return;
         }
 
-        String linea = lineas[indice].trim();
+        String linea = lineas[i].trim();
         if (!linea.isEmpty()) {
             Tiquete tiquete = Tiquete.deserializar(linea);
             if (tiquete != null) {
                 encolar(tiquete);
             }
         }
-        LineasRecursivo(lineas, indice + 1); // Recursión
+        cargarLineas(lineas, i + 1);
     }
 }

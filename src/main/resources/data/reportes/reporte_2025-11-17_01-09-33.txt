@@ -1,6 +1,0 @@
-=== REPORTE DE ATENCIONES ===
-
-1. Caja que más clientes atendió: 3
-2. Total clientes atendidos: 1
-3. Caja con mejor tiempo promedio: 3
-4. Tiempo promedio general: 5.0 ms
